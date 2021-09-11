@@ -1,75 +1,75 @@
-﻿using System.Net.Mime;
-using System.Diagnostics;
-using System;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
+﻿using System;
+using System.Linq;
+
 
 namespace WhatsAppSendAPI
 {
     class Program
     {
-        IWebDriver driver;
-
-        private bool CheckLoggedIn()
-        {
-            try
-            {
-                return driver.FindElement(By.CssSelector("_2Uo0Z")).Displayed;
-            }
-            catch (System.Exception e)
-            {
-                Debug.Print(e.Message);
-                Console.WriteLine(e.Message);
-                return false;
-            }
-        }
-
-        private void SendMessage(string number, string message)
-        {
-            //Wait for maximum of 10 second if any element is not found
-            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-
-            driver.Navigate().GoToUrl(
-                                        "https://api.whatsapp.com/send?phone=" +
-                                        number +
-                                        "&text=" +
-                                        Uri.EscapeDataString(message)
-                                     );
-
-            driver.FindElement(By.Id("action-button")).Click(); // send button
-            driver.FindElement(By.CssSelector("button._2lkdt>span")).Click(); // send arrow button
-        }
+        private Core _core = new Core();
+        public Core core
+        => _core;
 
         public void Run()
         {
-            driver = new ChromeDriver();
-            driver.Navigate().GoToUrl("https://web.whatsapp.com");
+            core.StartWhatsApp();
 
             while (true)
             {
-                Console.WriteLine("Login to WhatsApp Web and Press Enter");
-                var c = Console.ReadLine();
-                if (c.ToLower() == "q")
+                System.Console.WriteLine("WhatsApp web client'a giriş yap ve ENTER'a bas.");
+                var s = System.Console.ReadLine();
+                if (s.ToLower() == "exit")
                 {
+                    core.driver.Quit();
                     Environment.Exit(-1);
                 }
-                else
+                if (core.CheckLoggedIn())
+                {
                     break;
+                }
             }
 
-            Console.WriteLine("Enter the phone number without leading zeros and Press Enter");
-            var number = Console.ReadLine();
 
-            Console.WriteLine("Enter your message and Press Enter");
-            var message = Console.ReadLine();
+        mesajgonder:
 
-            SendMessage(number, message);
+            System.Console.WriteLine("Mesaj göndermek istediğiniz kişinin ismini ve mesajınızı aralarında boşluk bırakarak gir ve ENTER'A bas.");
+            var data = System.Console.ReadLine();
+            if (data.ToLower() == "exit")
+            {
+                Environment.Exit(-1);
+            }
+            var regularData = data.Split(" ");
+
+            if (core.SendMessage(regularData))
+                System.Console.WriteLine("Gönderim başarılı");
+            else System.Console.WriteLine("Gönderim başarısız");
+
+            goto mesajgonder;
+
 
         }
 
         static void Main(string[] args)
         {
+            System.Console.WriteLine("Komut bekleniyor:");
+
+            while (true)
+            {
+                var command = System.Console.ReadLine();
+                if (command.ToLower() == "start")
+                {
+                    break;
+                }
+                else if (command.ToLower() == "exit")
+                {
+                    core.driver.Quit();
+                    Environment.Exit(-1);
+                }
+
+            }
+
             new Program().Run();
+
         }
     }
 }
