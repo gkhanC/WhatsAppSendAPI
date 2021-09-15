@@ -85,13 +85,13 @@ namespace WhatsAppSendAPI
                 return false;
             }
 
-            Thread.Sleep(1000);
+            Thread.Sleep(500);
             for (int i = 0; i < messageCount;)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
                 if (TypeMessage(args[1]))
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(500);
                     if (ClickSendButton())
                     {
                         i++;

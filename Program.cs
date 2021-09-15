@@ -61,8 +61,7 @@ namespace WhatsAppSendAPI
                     break;
                 }
                 else if (command.ToLower() == "exit")
-                {
-                    core.driver.Quit();
+                {                    
                     Environment.Exit(-1);
                 }
 
