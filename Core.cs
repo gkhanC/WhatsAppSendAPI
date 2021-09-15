@@ -27,7 +27,7 @@ namespace WhatsAppSendAPI
         {
             try
             {
-                //new message button
+                System.Console.WriteLine("Yeni msj butonu algılandı.");
                 return driver.FindElement(By.XPath("//*[@id=\"side\"]/header/div[2]/div/span/div[2]/div")).Displayed;
             }
             catch (System.Exception e)
@@ -41,6 +41,7 @@ namespace WhatsAppSendAPI
         {
             try
             {
+                System.Console.WriteLine("Yeni mesaj oluştur.");
                 driver.FindElement(By.XPath("//*[@id=\"side\"]/header/div[2]/div/span/div[2]/div")).Click();
             }
             catch (Exception e)
@@ -56,6 +57,7 @@ namespace WhatsAppSendAPI
         {
             try
             {
+                System.Console.WriteLine("Kişiyi bul.");
                 driver.FindElement(By.XPath("//*[@id=\"app\"]/div[1]/div[1]/div[2]/div[1]/span/div[1]/span/div[1]/div[1]/div/label/div/div[2]")).SendKeys(args[0]);
             }
             catch (Exception e)
@@ -64,41 +66,21 @@ namespace WhatsAppSendAPI
                 return false;
             }
 
-            Thread.Sleep(1000);
-            if (OpenPersonChat(args))
-            {
-                return true;
-            }
 
-            return false;
+            return true;
         }
 
         public bool OpenPersonChat(string[] args)
         {
             try
-            {                
+            {
+                System.Console.WriteLine("Kişi Sohbetini aç.");
                 driver.FindElement(By.ClassName("_3OvU8")).Click();
             }
             catch (Exception e)
             {
                 Debug.Print(e.Message);
                 return false;
-            }
-
-            Thread.Sleep(500);
-            for (int i = 0; i < messageCount;)
-            {
-                Thread.Sleep(500);
-                if (TypeMessage(args[1]))
-                {
-                    Thread.Sleep(500);
-                    if (ClickSendButton())
-                    {
-                        i++;
-                    }
-                    else break;
-                }
-                else break;
             }
 
 
@@ -109,11 +91,12 @@ namespace WhatsAppSendAPI
         {
             try
             {
-                driver.FindElement(By.XPath("//*[@id=\"main\"]/footer/div[1]/div[2]/div/div[1]/div/div[2]")).SendKeys(message);
+                System.Console.WriteLine("Mesajı gir.");
+                driver.FindElement(By.XPath("//*[@id=\"main\"]/footer/div[1]/div/div/div[2]/div[1]/div/div[2]")).SendKeys(message);
             }
             catch (Exception e)
             {
-                Debug.Print(e.Message);
+               System.Console.WriteLine((e.Message));
                 return false;
             }
 
@@ -124,7 +107,8 @@ namespace WhatsAppSendAPI
         {
             try
             {
-                driver.FindElement(By.XPath("//*[@id=\"main\"]/footer/div[1]/div[2]/div/div[2]")).Click();
+                System.Console.WriteLine("Gönder tuşuna bas.");
+                driver.FindElement(By.XPath("//*[@id=\"main\"]/footer/div[1]/div/div/div[2]/div[2]/button/span")).Click();
             }
             catch (Exception e)
             {
@@ -135,13 +119,13 @@ namespace WhatsAppSendAPI
             return true;
         }
 
-        public bool SendMessage(string[] args)
-        {            
-            if (args.Length < 2)
+        public bool SendMessage(string[] args, string msg)
+        {
+            if (args.Length < 1)
                 return false;
 
-            if (args.Length >= 3)
-                _messageCount = Convert.ToInt32(args[2]);
+            if (args.Length >= 2)
+                _messageCount = Convert.ToInt32(args[1]);
 
             if (CheckLoggedIn())
             {
@@ -149,7 +133,27 @@ namespace WhatsAppSendAPI
                 {
                     if (FindPerson(args))
                     {
-                        return true;
+                        Thread.Sleep(1000);
+                        if (OpenPersonChat(args))
+                        {
+                            Thread.Sleep(500);
+                            for (int i = 0; i < messageCount;)
+                            {
+                                Thread.Sleep(500);
+                                if (TypeMessage(msg))
+                                {
+                                    Thread.Sleep(250);
+                                    if (ClickSendButton())
+                                    {
+                                        i++;
+                                    }
+                                    else return false;
+                                }
+                                else return false;
+                            }
+                            return true;
+                        }
+                        return false;
                     }
                 }
             }

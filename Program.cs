@@ -32,7 +32,7 @@ namespace WhatsAppSendAPI
 
         mesajgonder:
 
-            System.Console.WriteLine("Mesaj göndermek istediğiniz kişinin ismini ve mesajınızı aralarında boşluk bırakarak gir ve ENTER'A bas.");
+            System.Console.WriteLine("Mesaj göndermek istediğiniz kişinin ismini veya numarasnısnı gir ve ENTER'A bas.\n(Mesajı spawmlmak için boşluk bırakarak sayı giriniz.)");
             var data = System.Console.ReadLine();
             if (data.ToLower() == "exit")
             {
@@ -40,7 +40,10 @@ namespace WhatsAppSendAPI
             }
             var regularData = data.Split(" ");
 
-            if (core.SendMessage(regularData))
+            System.Console.WriteLine("Göndermek istediğiniz mesajı gir ve ENTER'a bas.");
+            var msg = Console.ReadLine();
+
+            if (core.SendMessage(regularData,msg))
                 System.Console.WriteLine("Gönderim başarılı");
             else System.Console.WriteLine("Gönderim başarısız");
 
